@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  min-height: 100%;
+}
+
+#__next {
+  height: 100%;
+}
+
+code {
+  font-family: 'Poppins', sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue';
+  padding: 0.1rem 0.4rem;
+  font-size: 90%;
+  color: #fed700;
+  border-radius: 0.1335rem;
+}
+code:not([class*='language-']):before,
+code:not([class*='language-']):after {
+  content: '`';
+}
+code[class*='language-'] {
+  padding: 0;
+}
+
+.bg-mainBackgroundColor {
+  background-color: #D6DDFF;
+}
+
+.border-columnBackgroundColor {
+  border-color: #8A9EFF;
+}
+
+#root {
+  background-color: black;
+  color: white;
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #515456;
+  border-radius: 0.25rem;
+}
+
+.task > ::-webkit-scrollbar-thumb {
+  background-color: stone-500;
+  border-radius: rounded-xl;
+}
+
+.cl-card {
+  font-size: 14px;
+  text-transform: none;
+  background-color: #fff;
+  box-shadow: none; /* Removes any shadow effects */
+  border: none; /* Removes the border */
+}
+
+.cl-headerTitle {
+  display: none;
+  color: #000;
+}
+
+.cl-formFieldInput {
+  background-color: #fff;
+  color: #000;
+}
+
+.cl-identityPreviewText {
+  background-color: #fff;
+  color: #000;
+}
+
+.cl-identityPreview {
+  background-color: #fff;
+  color: #000;
+}
+
+.cl-headerSubtitle {
+  display: none;
+  color: #000;
+}
+
+.cl-socialButtonsBlockButtonText {
+  color: #000;
+}
+
+.cl-providerIcon__github {
+  color: #000;
+}
+
+.cl-internal-9tfui4 {
+  display: none;
+}
