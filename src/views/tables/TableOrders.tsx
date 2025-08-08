@@ -60,18 +60,17 @@ const DataTable = ({ orders, updateOrderStatus }: TableOrdersProps) => {
             renderCell: (params) => {
                 const statusColors: { [key: string]: 'error' | 'success' | 'warning' | 'info' } = {
                     confirmed: 'warning',
-                    printingscheduled: 'info',
-                    inproduction: 'info',
-                    postprocessing: 'info',
+                    printingScheduled: 'info',
+                    inProduction: 'info',
+                    postProcessing: 'info',
                     dispatch: 'info',
                     shipped: 'success',
                     cancelled: 'error',
                 };
                 
-                // Add null/undefined check and provide fallback
+                // Safe access to params.value with fallback
                 const statusValue = params.value || '';
-                const normalizedStatus = statusValue.toLowerCase();
-                const color = statusColors[normalizedStatus] || 'default';
+                const color = statusValue ? statusColors[statusValue.toLowerCase() as keyof typeof statusColors] || 'default' : 'default';
 
                 return <Chip label={statusValue || 'Unknown'} color={color} />;
             },
