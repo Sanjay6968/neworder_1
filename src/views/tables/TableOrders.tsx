@@ -68,11 +68,13 @@ const DataTable = ({ orders, updateOrderStatus }: TableOrdersProps) => {
                     cancelled: 'error',
                 };
                 
-                // Safe access to params.value with fallback
-                const statusValue = params.value || '';
-                const color = statusValue ? statusColors[statusValue.toLowerCase() as keyof typeof statusColors] || 'default' : 'default';
-
-                return <Chip label={statusValue || 'Unknown'} color={color} />;
+                // Only add null check to prevent the error, keep original logic
+                if (!params.value) {
+                    return <Chip label="Unknown" color="default" />;
+                }
+                
+                const color = statusColors[params.value.toLowerCase() as keyof typeof statusColors] || 'default';
+                return <Chip label={params.value} color={color} />;
             },
         },
         {
