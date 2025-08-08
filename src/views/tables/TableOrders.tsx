@@ -67,13 +67,8 @@ const DataTable = ({ orders, updateOrderStatus }: TableOrdersProps) => {
                     shipped: 'success',
                     cancelled: 'error',
                 };
-                
-                // Only add null check to prevent the error, keep original logic
-                if (!params.value) {
-                    return <Chip label="Unknown" color="default" />;
-                }
-                
-                const color = statusColors[params.value.toLowerCase() as keyof typeof statusColors] || 'default';
+                const color = statusColors[params.value?.toLowerCase() as keyof typeof statusColors] || 'default';
+
                 return <Chip label={params.value} color={color} />;
             },
         },
