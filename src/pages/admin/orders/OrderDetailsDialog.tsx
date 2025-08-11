@@ -112,6 +112,15 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  // Helper function to get auth headers
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
+    };
+  };
+
   useEffect(() => {
     const fetchOrderDetails = async () => {
       setLoading(true);
@@ -119,9 +128,7 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/api/private/orders/${orderId}`, {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: getAuthHeaders(),
         });
 
         if (!response.ok) {
@@ -190,9 +197,7 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/api/private/order/${endpoint}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ orderId }),
       });
 
@@ -223,23 +228,33 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
   };
 
   const handleAddNote = async () => {
+    if (!note.trim()) {
+      console.error('Note cannot be empty');
+      return;
+    }
+
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/api/private/order/addNote`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ orderId, note }),
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        if (response.status === 401) {
+          console.error('Unauthorized: Please check your authentication token');
+        }
+        throw new Error(`Network response was not ok: ${response.status}`);
       }
 
       const data = await response.json();
       console.log('Note added successfully:', data);
 
       setNote('');
+      
+      // Optionally refresh the order details to show the new note
+      // You might want to refetch order details here or update the state
+      
     } catch (error) {
       console.error('Failed to add note:', error);
     }
@@ -429,6 +444,7 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
                       variant="contained"
                       style={{ backgroundColor: '#FED700', color: "primary", marginTop: '8px' }}
                       onClick={handleAddNote}
+                      disabled={!note.trim()}
                     >
                       Add Notes
                     </Button>
