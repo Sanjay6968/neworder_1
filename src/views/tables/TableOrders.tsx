@@ -24,6 +24,11 @@ interface Order {
     status: string;
 }
 
+interface TableOrdersProps {
+    orders: Order[];
+    updateOrderStatus: (id: string, newStatus: string) => void;
+}
+
 const DataTable = ({ orders, updateOrderStatus }: TableOrdersProps) => {
     const [dialogOpen, setDialogOpen] = useState<boolean>(false);
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -58,18 +63,26 @@ const DataTable = ({ orders, updateOrderStatus }: TableOrdersProps) => {
             headerName: 'Order Status',
             flex: 1,
             renderCell: (params) => {
+                // Add null check to prevent errors
+                const status = params.value;
+                if (!status) {
+                    return <Chip label="Unknown" color="default" />;
+                }
+
                 const statusColors: { [key: string]: 'error' | 'success' | 'warning' | 'info' } = {
                     confirmed: 'warning',
-                    printingScheduled: 'info',
-                    inProduction: 'info',
-                    postProcessing: 'info',
+                    printingscheduled: 'info',
+                    inproduction: 'info',
+                    postprocessing: 'info',
                     dispatch: 'info',
                     shipped: 'success',
                     cancelled: 'error',
                 };
-                const color = statusColors[params.value?.toLowerCase() as keyof typeof statusColors] || 'default';
+                
+                // Safe toLowerCase with null check
+                const color = statusColors[status.toLowerCase()] || 'default';
 
-                return <Chip label={params.value} color={color} />;
+                return <Chip label={status} color={color} />;
             },
         },
         {
@@ -93,7 +106,7 @@ const DataTable = ({ orders, updateOrderStatus }: TableOrdersProps) => {
             <DataGrid
                 rows={orders}
                 columns={columns}
-                checkboxSelection
+                // Removed checkboxSelection to eliminate checkbox selection
                 disableRowSelectionOnClick
                 onRowClick={handleRowClick}
             />
@@ -117,10 +130,5 @@ const DataTable = ({ orders, updateOrderStatus }: TableOrdersProps) => {
         </div>
     );
 };
-
-interface TableOrdersProps {
-    orders: Order[];
-    updateOrderStatus: (id: string, newStatus: string) => void;
-}
 
 export default DataTable;
