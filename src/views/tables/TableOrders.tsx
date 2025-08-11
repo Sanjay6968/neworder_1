@@ -44,11 +44,39 @@ const DataTable = ({ orders, updateOrderStatus }: TableOrdersProps) => {
         event.stopPropagation();
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/api/private/orders/status-notes/${orderId}`);
+            
+            // Check if the response is successful
+            if (!response.ok) {
+                if (response.status === 401) {
+                    console.error('Unauthorized: Please check your authentication token');
+                    // You might want to redirect to login or refresh token here
+                    alert('You are not authorized to view notes. Please log in again.');
+                    return;
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            }
+
+            // Check if the response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Response is not JSON');
+            }
+
             const data = await response.json();
-            setSelectedOrderNotes(data.statusNotes);
+            setSelectedOrderNotes(data.statusNotes || []);
             setNotesDialogOpen(true);
         } catch (error) {
             console.error('Error fetching notes:', error);
+            
+            // More user-friendly error handling
+            if (error instanceof SyntaxError) {
+                alert('Failed to load notes: Invalid server response');
+            } else if (error instanceof TypeError) {
+                alert('Failed to load notes: Network error');
+            } else {
+                alert('Failed to load notes: Please try again later');
+            }
         }
     };
 
