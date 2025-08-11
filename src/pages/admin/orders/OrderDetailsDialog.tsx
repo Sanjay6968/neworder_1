@@ -162,63 +162,35 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
 
   const isValidDate = (dateString: string) => {
     const date = new Date(dateString);
-
     return !isNaN(date.getTime());
   };
 
-  const sendUpdateOrderStatusRequest = async (orderId: string, newStatus: string) => {
-    let endpoint = '';
-    switch (newStatus) {
-      case 'confirmed':
-        endpoint = 'setStatusConfirmed';
-        break;
-      case 'printingScheduled':
-        endpoint = 'setStatusPrintingScheduled';
-        break;
-      case 'inProduction':
-        endpoint = 'setStatusInProduction';
-        break;
-      case 'postProcessing':
-        endpoint = 'setStatusPostProcessing';
-        break;
-      case 'dispatch':
-        endpoint = 'setStatusDispatch';
-        break;
-      case 'shipped':
-        endpoint = 'setStatusShipped';
-        break;
-      case 'cancelled':
-        endpoint = 'setStatusCancelled';
-        break;
-      default:
-        throw new Error(`Unknown status: ${newStatus}`);
-    }
+  const handleStatusChange = async (event: SelectChangeEvent) => {
+    const newStatus = event.target.value;
+    setStatus(newStatus);
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/api/private/order/${endpoint}`, {
-        method: 'POST',
+      const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/api/private/orders/${orderId}/status`, {
+        method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ orderId }),
+        body: JSON.stringify({ status: newStatus }),
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Failed to update status');
       }
 
-      const updatedOrder = await response.json();
-      setOrderDetails(updatedOrder);
-      setStatus(updatedOrder.status);
+      const data = await response.json();
+      console.log('Status updated successfully:', data);
+      
+      // Update parent component
+      updateOrderStatus(orderId, newStatus);
+      
     } catch (error) {
-      console.error(`Failed to update order status to ${newStatus}:`, error);
+      console.error('Failed to update order status:', error);
+      // Revert status on error
+      setStatus(orderDetails?.status || '');
     }
-  };
-
-  const handleStatusChange = (event: SelectChangeEvent) => {
-    const newStatus = event.target.value;
-
-    setStatus(newStatus);
-
-    sendUpdateOrderStatusRequest(orderId, newStatus);
   };
 
   const handleDownload = () => {
@@ -234,17 +206,23 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
     }
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/api/private/order/addNote`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/api/private/orders/${orderId}/add-note`, {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ orderId, note }),
+        body: JSON.stringify({ 
+          note: note.trim(),
+          status: status // Associate note with current status
+        }),
       });
 
       if (!response.ok) {
         if (response.status === 401) {
           console.error('Unauthorized: Please check your authentication token');
+          alert('You are not authorized. Please log in again.');
+        } else {
+          throw new Error(`Network response was not ok: ${response.status}`);
         }
-        throw new Error(`Network response was not ok: ${response.status}`);
+        return;
       }
 
       const data = await response.json();
@@ -252,11 +230,12 @@ const OrderDetailsDialog: React.FC<OrderDetailsDialogProps> = ({
 
       setNote('');
       
-      // Optionally refresh the order details to show the new note
-      // You might want to refetch order details here or update the state
+      // Show success message
+      alert('Note added successfully!');
       
     } catch (error) {
       console.error('Failed to add note:', error);
+      alert('Failed to add note. Please try again.');
     }
   };
 
