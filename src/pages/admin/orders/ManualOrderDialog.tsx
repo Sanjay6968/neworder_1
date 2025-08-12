@@ -89,16 +89,6 @@ const ManualOrderDialog: React.FC<ManualOrderDialogProps> = ({ open, onClose }) 
     const { cname, phone, totalFinalAmount, deliveryType, shippingMethod, expertAssistance, email, address, pincode, status, technology, material, layerThickness, printer, infill, colorFinish, quantity, gstNumber, originalFileName } = orderData;
     
     const payload = {
-      // Customer information
-      customerInfo: {
-        name: cname,
-        email: email,
-        phone: phone,
-        address: address,
-        pincode: pincode,
-        gstNumber: gstNumber
-      },
-      // Order information  
       customization: {
         technology,
         material,
