@@ -89,6 +89,16 @@ const ManualOrderDialog: React.FC<ManualOrderDialogProps> = ({ open, onClose }) 
     const { cname, phone, totalFinalAmount, deliveryType, shippingMethod, expertAssistance, email, address, pincode, status, technology, material, layerThickness, printer, infill, colorFinish, quantity, gstNumber, originalFileName } = orderData;
     
     const payload = {
+      // Customer information
+      customerInfo: {
+        name: cname,
+        email: email,
+        phone: phone,
+        address: address,
+        pincode: pincode,
+        gstNumber: gstNumber
+      },
+      // Order information  
       customization: {
         technology,
         material,
@@ -135,6 +145,30 @@ const ManualOrderDialog: React.FC<ManualOrderDialogProps> = ({ open, onClose }) 
       const data = await response.json();
       console.log('Order created successfully:', data);
       alert('Manual order created successfully!');
+      
+      // Reset form after successful creation
+      setOrderData({
+        cname: '',
+        phone: '',
+        totalFinalAmount: '', 
+        deliveryType: 'Standard',
+        shippingMethod: 'DTDC',
+        expertAssistance: 'Not Required',
+        email: '',
+        address: '',
+        pincode: '',
+        status: '',
+        technology: 'FDM',
+        material: 'PLA',
+        layerThickness: 'NORMAL',
+        printer: 'STANDARD 220x200x220mm',
+        infill: 10,
+        colorFinish: 'White',
+        quantity: 1,
+        gstNumber: '',
+        originalFileName: '',
+      });
+      
       onClose();
     } catch (error) {
       console.error('Error creating order:', error);
