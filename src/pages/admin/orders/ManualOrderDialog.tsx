@@ -117,6 +117,7 @@ const ManualOrderDialog: React.FC<ManualOrderDialogProps> = ({ open, onClose }) 
     };
 
     try {
+      console.log('Sending payload:', payload);
       const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/manual-orders/create`, {
         method: 'POST',
         headers: {
@@ -126,14 +127,18 @@ const ManualOrderDialog: React.FC<ManualOrderDialogProps> = ({ open, onClose }) 
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorText = await response.text();
+        console.error('Server error response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
       console.log('Order created successfully:', data);
+      alert('Manual order created successfully!');
       onClose();
     } catch (error) {
       console.error('Error creating order:', error);
+      alert(`Failed to create order: ${error.message}`);
     }
   };
 
