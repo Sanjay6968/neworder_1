@@ -138,7 +138,7 @@ const ManualOrderDialog: React.FC<ManualOrderDialogProps> = ({ open, onClose }) 
       onClose();
     } catch (error) {
       console.error('Error creating order:', error);
-      alert(`Failed to create order: ${error.message}`);
+      alert(`Failed to create order: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
