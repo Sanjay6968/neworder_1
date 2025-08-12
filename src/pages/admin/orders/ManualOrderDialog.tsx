@@ -1,4 +1,4 @@
-// Replace your handleCreateOrder function with this updated version:
+// Replace ONLY the handleCreateOrder function in your ManualOrderDialog.tsx component with this:
 const handleCreateOrder = async () => {
   const { cname, phone, totalFinalAmount, deliveryType, shippingMethod, expertAssistance, email, address, pincode, status, technology, material, layerThickness, printer, infill, colorFinish, quantity, gstNumber, originalFileName } = orderData;
   
