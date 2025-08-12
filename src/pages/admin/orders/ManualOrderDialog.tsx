@@ -110,46 +110,30 @@ const ManualOrderDialog: React.FC<ManualOrderDialogProps> = ({ open, onClose }) 
         shippingMethod,
       },
       printPrices: {
-        totalFinalAmount: parseFloat(totalFinalAmount),
+        totalFinalAmount,
       },
       status,
       gstNumber,
     };
 
     try {
-      // Get the auth token
-      const token = localStorage.getItem('token') || 
-                    localStorage.getItem('authToken') || 
-                    sessionStorage.getItem('token') ||
-                    sessionStorage.getItem('authToken');
-
-      if (!token) {
-        alert('Authentication required. Please log in.');
-        return;
-      }
-
       const response = await fetch(`${process.env.NEXT_PUBLIC_MEKUVA_BACKEND_API_BASE_URL}/manual-orders/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+        throw new Error('Network response was not ok');
       }
 
       const data = await response.json();
       console.log('Order created successfully:', data);
-      alert('Order created successfully!');
       onClose();
-      
     } catch (error) {
       console.error('Error creating order:', error);
-      alert(`Failed to create order: ${error.message}`);
     }
   };
 
